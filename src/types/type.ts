@@ -52,3 +52,15 @@ export interface AppData {
   tabs: Tab[];
   activeTabId: string;
 }
+
+export type ResponseBody = | string | object | Record<string, unknown> | unknown[] | null | undefined;
+
+export interface ResponseData {
+    status: number;
+    statusText: string;
+    headers: Record<string, string>;
+    body: ResponseBody;
+    time: number;
+    size: number;
+    error?: string;
+}
