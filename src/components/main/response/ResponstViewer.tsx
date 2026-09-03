@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ResponseData, ResponseBody } from "../../../types/type";
+import type { ResponseData, ResponseBody } from "../../../app/type";
 
 interface ResponseViewerProps {
     response?: ResponseData;
@@ -23,6 +23,7 @@ function ResponseViewer({ response, isLoading = false }: ResponseViewerProps) {
     };
 
     const formatHeaders = (headers: Record<string, string>) => {
+        if (response === undefined) return null;
         return Object.entries(headers).map(([key, value]) => (
             <div key={key} className="flex gap-4 text-sm">
                 <span className="w-32 text-gray-400 font-mono">{key}</span>

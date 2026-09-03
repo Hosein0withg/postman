@@ -1,9 +1,14 @@
-import { useState } from "react";
-import type { Header, Parameter } from "../../../types/type";
+import type { Header, Parameter } from "../../../app/type";
 
 interface RequestConfigProps {
     activeTab: "params" | "headers" | "body";
     onTabChange: (tab: "params" | "headers" | "body") => void;
+    params: Parameter[];
+    setParams: React.Dispatch<React.SetStateAction<Parameter[]>>;
+    headers: Header[];
+    setHeaders: React.Dispatch<React.SetStateAction<Header[]>>;
+    body: string;
+    setBody: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface ConfigItem {
@@ -13,15 +18,16 @@ interface ConfigItem {
     enabled: boolean;
 }
 
-function RequestConfig({ activeTab, onTabChange }: RequestConfigProps) {
-    const [headers, setHeaders] = useState<Header[]>([
-        { id: "1", key: "", value: "", enabled: true },
-    ]);
-
-    const [params, setParams] = useState<Parameter[]>([
-        { id: "1", key: "", value: "", enabled: true },
-    ]);
-
+function RequestConfig({
+    activeTab,
+    onTabChange,
+    params,
+    setParams,
+    headers,
+    setHeaders,
+    body,
+    setBody,
+}: RequestConfigProps) {
     const addItem = <T extends ConfigItem>(
         setItems: React.Dispatch<React.SetStateAction<T[]>>,
     ) => {
@@ -73,8 +79,7 @@ function RequestConfig({ activeTab, onTabChange }: RequestConfigProps) {
     const renderItems = <T extends ConfigItem>(
         items: T[],
         setItems: React.Dispatch<React.SetStateAction<T[]>>,
-        placeholder: string,
-        addLabel: string,
+        label: string,
     ) => (
         <div className="p-3 space-y-2">
             {items.map((item) => (
@@ -97,7 +102,7 @@ function RequestConfig({ activeTab, onTabChange }: RequestConfigProps) {
                         <button
                             onClick={() => removeItem(item.id, items, setItems)}
                             className="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors rounded text-base"
-                            title={`Remove ${placeholder}`}
+                            title={`Remove ${label}`}
                         >
                             🗑️
                         </button>
@@ -115,7 +120,7 @@ function RequestConfig({ activeTab, onTabChange }: RequestConfigProps) {
                                 setItems,
                             )
                         }
-                        placeholder={placeholder}
+                        placeholder="key"
                         className="bg-[#1e1e1e] text-white text-sm px-2 py-1.5 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500"
                     />
 
@@ -131,7 +136,7 @@ function RequestConfig({ activeTab, onTabChange }: RequestConfigProps) {
                                 setItems,
                             )
                         }
-                        placeholder={placeholder}
+                        placeholder="value"
                         className="bg-[#1e1e1e] text-white text-sm px-2 py-1.5 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500"
                     />
                 </div>
@@ -141,7 +146,7 @@ function RequestConfig({ activeTab, onTabChange }: RequestConfigProps) {
                 onClick={() => addItem(setItems)}
                 className="flex items-center gap-1.5 text-sm text-[#6c63ff] hover:text-[#8a84ff] transition-colors mt-1"
             >
-                + {addLabel}
+                + add {label}
             </button>
         </div>
     );
@@ -166,13 +171,15 @@ function RequestConfig({ activeTab, onTabChange }: RequestConfigProps) {
 
             <div className="flex-1 bg-[#141414] border border-[#2a2a2a] rounded-b border-t-0 overflow-y-auto">
                 {activeTab === "params" &&
-                    renderItems(params, setParams, "key", "Add parameter")}
+                    renderItems(params, setParams, "parameter")}
                 {activeTab === "headers" &&
-                    renderItems(headers, setHeaders, "key", "Add header")}
+                    renderItems(headers, setHeaders, "header")}
                 {activeTab === "body" && (
                     <div className="p-3">
                         <textarea
                             placeholder="request body"
+                            value={body}
+                            onChange={(e) => setBody(e.target.value)}
                             className="w-full h-32 bg-[#1e1e1e] text-white text-sm px-3 py-2 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500 resize-none font-mono"
                         />
                     </div>
