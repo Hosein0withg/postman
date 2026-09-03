@@ -1,13 +1,13 @@
 import { useState } from "react";
 import RequestBar from "./RequestBar";
 import RequestConfig from "./RequestConfig";
-import { type Request as RequestType, type Header, type Parameter, type HttpMethod } from "../../../app/type";
+import { type Request, type Header, type Parameter, type HttpMethod } from "../../../app/type";
 
 interface RequestProps {
-    onSendRequest: (request: RequestType) => void;
+    onSendRequest: (request: Request) => void;
 }
 
-function Request({ onSendRequest }: RequestProps) {
+function RequestDiv({ onSendRequest }: RequestProps) {
     const [activeConfigTab, setActiveConfigTab] = useState<
         "params" | "headers" | "body"
     >("headers");
@@ -52,4 +52,4 @@ function Request({ onSendRequest }: RequestProps) {
     );
 }
 
-export default Request;
+export default RequestDiv;

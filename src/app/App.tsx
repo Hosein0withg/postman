@@ -1,34 +1,33 @@
 import { useState } from "react";
 import Sidebar from "../components/sidebar/sidebar.tsx";
 import Tabs from "../components/main/tab/tab.tsx";
-import Request from "../components/main/request/Request.tsx";
+import RequestDiv from "../components/main/request/RequestDiv.tsx";
 import ResponseViewer from "../components/main/response/ResponstViewer.tsx";
-import type { Request as RequestType, ResponseData } from "../app/type";
+import type { Request as RequestObj, ResponseData } from "../app/type";
+import { sendApiRequest } from "../services/apiService.ts";
 
 function App() {
     const [response, setResponse] = useState<ResponseData | undefined>(
         undefined,
     );
     const [isLoading, setIsLoading] = useState(false);
-    const sendRequest = async (requestData: RequestType) => {
+
+    const sendRequest = async (requestData: RequestObj) => {
         setIsLoading(true);
         setResponse(undefined);
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            setResponse({
-                status: 300,
-                statusText: "OK",
-                headers: { "content-type": "application/json" },
-                body: {
-                    message: "Request received!",
-                    data: requestData,
-                },
-                time: 123,
-                size: 456,
-            });
+            setResponse(await sendApiRequest(requestData));
         } catch (error) {
-            console.log(error);
+            console.error("Request failed:", error);
+            setResponse({
+                status: 500,
+                statusText: "Internal Server Error",
+                headers: {},
+                body: null,
+                time: 0,
+                size: 0,
+                error: "An error occurred.",
+            });
         } finally {
             setIsLoading(false);
         }
@@ -42,7 +41,7 @@ function App() {
                 <Tabs />
 
                 <div className="flex min-h-0 flex-1 flex-col">
-                    <Request onSendRequest={sendRequest} />
+                    <RequestDiv onSendRequest={sendRequest} />
                     <ResponseViewer response={response} isLoading={isLoading} />
                 </div>
             </div>
