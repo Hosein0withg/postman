@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ResponseData, ResponseBody } from "../../../app/type";
+import type { ResponseData, ResponseBody } from "../../../type";
 
 interface ResponseViewerProps {
     response?: ResponseData;
@@ -67,21 +67,6 @@ function ResponseViewer({ response, isLoading = false }: ResponseViewerProps) {
             </section>
         );
     }
-    if (response.error) {
-        return (
-            <section className="flex flex-col bg-[#0d0d0d] border-t border-[#2a2a2a] h-65 shrink-0">
-                <div className="flex items-center px-4 py-2 bg-[#141414] border-b border-[#2a2a2a] shrink-0">
-                    <span className="text-sm font-medium text-gray-300">
-                        Response
-                    </span>
-                    <span className="ml-3 text-sm text-red-400">Error</span>
-                </div>
-                <div className="flex-1 flex items-center justify-center text-red-400 p-4">
-                    <p className="text-center">{response.error}</p>
-                </div>
-            </section>
-        );
-    }
 
     const statusColor =
         response.status >= 200 && response.status < 300
@@ -89,6 +74,39 @@ function ResponseViewer({ response, isLoading = false }: ResponseViewerProps) {
             : response.status >= 400
               ? "text-red-400"
               : "text-yellow-400";
+    const badgeColor =
+        response.status >= 200 && response.status < 300
+            ? "bg-green-500/20 text-green-400 border-green-500/30"
+            : response.status >= 400
+              ? "bg-red-500/20 text-red-400 border-red-500/30"
+              : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+
+    if (response.error) {
+        return (
+            <section className="flex flex-col bg-[#0d0d0d] border-t border-[#2a2a2a] h-65 shrink-0">
+                <div className="flex items-center px-4 py-2 bg-[#141414] border-b border-[#2a2a2a] shrink-0">
+                    <span className="text-sm font-medium text-gray-300">
+                        Response
+                    </span>
+
+                    {response.status > 0 && (
+                        <div
+                            className={`ml-3 flex items-center gap-2 px-2.5 py-0.5 rounded border ${badgeColor}`}
+                        >
+                            <span
+                                className={`text-sm font-medium ${statusColor}`}
+                            >
+                                {response.status} {response.statusText}
+                            </span>
+                        </div>
+                    )}
+                </div>
+                <div className="flex-1 flex items-center justify-center text-red-400 p-4">
+                    <p className="text-center">{response.error}</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="flex flex-col bg-[#0d0d0d] border-t border-[#2a2a2a] h-65 shrink-0">

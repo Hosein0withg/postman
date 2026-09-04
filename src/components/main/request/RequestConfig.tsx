@@ -1,4 +1,4 @@
-import type { Header, Parameter } from "../../../app/type";
+import type { Header, Parameter } from "../../../type";
 
 interface RequestConfigProps {
     activeTab: "params" | "headers" | "body";
@@ -180,7 +180,7 @@ function RequestConfig({
                             placeholder="request body"
                             value={body}
                             onChange={(e) => setBody(e.target.value)}
-                            className="w-full h-32 bg-[#1e1e1e] text-white text-sm px-3 py-2 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500 resize-none font-mono"
+                            className="w-full h-65 bg-[#1e1e1e] text-white text-sm px-3 py-2 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500 resize-none font-mono"
                         />
                     </div>
                 )}

@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import RequestBar from "./RequestBar";
 import RequestConfig from "./RequestConfig";
-import { type Request, type Header, type Parameter, type HttpMethod } from "../../../app/type";
+import {
+    type Request,
+    type Header,
+    type Parameter,
+    type HttpMethod,
+} from "../../../type";
 
 interface RequestProps {
     onSendRequest: (request: Request) => void;
@@ -14,18 +19,46 @@ function RequestDiv({ onSendRequest }: RequestProps) {
 
     const [method, setMethod] = useState<HttpMethod>("GET");
     const [url, setUrl] = useState<string>("");
-    const [params, setParams] = useState<Parameter[]>([{ id: "1", key: "", value: "", enabled: true }]);
-    const [headers, setHeaders] = useState<Header[]>([{ id: "1", key: "", value: "", enabled: true }]);
+    const [params, setParams] = useState<Parameter[]>([
+        { id: "1", key: "", value: "", enabled: false },
+    ]);
+    const [headers, setHeaders] = useState<Header[]>([
+        { id: "1", key: "", value: "", enabled: false },
+    ]);
     const [body, setBody] = useState<string>("");
 
+    const fullUrl: string = useMemo(() => {
+        if (!url) return "";
+
+        const enabledParams = params.filter((p) => p.enabled && p.key.trim());
+        if (enabledParams.length === 0) return url;
+
+        try {
+            const urlObj = new URL(url);
+            enabledParams.forEach((p) => {
+                urlObj.searchParams.append(p.key, p.value);
+            });
+            return urlObj.toString();
+        } catch {
+            return url;
+        }
+    }, [url, params]);
+
     const handleSendRequest = () => {
-        onSendRequest({
-            method,
-            url,
-            params: params,
-            headers,
-            body,
-        });
+        if (
+            url.toLocaleLowerCase().startsWith("http:") ||
+            url.toLocaleLowerCase().startsWith("https:")
+        ) {
+            onSendRequest({
+                method,
+                fullUrl,
+                params: params,
+                headers,
+                body,
+            });
+        } else {
+            alert("Invalid URL");
+        }
     };
 
     return (
@@ -33,7 +66,7 @@ function RequestDiv({ onSendRequest }: RequestProps) {
             <RequestBar
                 method={method}
                 setMethod={setMethod}
-                url={url}
+                fullUrl={fullUrl}
                 setUrl={setUrl}
                 onSend={handleSendRequest}
             />

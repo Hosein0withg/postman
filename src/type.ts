@@ -22,7 +22,7 @@ export interface Header {
 
 export interface Request {
   method: HttpMethod;
-  url: string;
+  fullUrl: string;
   params: Parameter[];
   headers: Header[];
   body: string;

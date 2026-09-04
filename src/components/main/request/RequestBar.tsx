@@ -1,15 +1,22 @@
-import type { HttpMethod } from "../../../app/type";
+import type { HttpMethod } from "../../../type";
 
 interface RequestBarProps {
     method: HttpMethod;
     setMethod: React.Dispatch<React.SetStateAction<HttpMethod>>;
-    url: string;
     setUrl: React.Dispatch<React.SetStateAction<string>>;
+    fullUrl: string;
     onSend: () => void;
 }
 
-function RequestBar({ method, setMethod, url, setUrl, onSend }: RequestBarProps) {
+function RequestBar({ method, setMethod, fullUrl, setUrl, onSend }: RequestBarProps) {
     const methods: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+
+    const handleEnter = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            onSend();
+        }
+    };
 
     return (
         <div className="flex items-center gap-2 p-3 bg-[#141414] border-b border-[#2a2a2a] shrink-0">
@@ -27,8 +34,9 @@ function RequestBar({ method, setMethod, url, setUrl, onSend }: RequestBarProps)
 
             <input
                 type="text"
-                value={url}
+                value={fullUrl}
                 onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={handleEnter}
                 placeholder="Enter request URL"
                 className="flex-1 bg-[#1e1e1e] text-white text-sm px-3 py-1.5 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500"
             />
