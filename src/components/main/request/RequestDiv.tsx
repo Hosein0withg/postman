@@ -10,9 +10,10 @@ import {
 
 interface RequestProps {
     onSendRequest: (request: Request) => void;
+    onResetResponse: () => void;
 }
 
-function RequestDiv({ onSendRequest }: RequestProps) {
+function RequestDiv({ onSendRequest, onResetResponse }: RequestProps) {
     const [activeConfigTab, setActiveConfigTab] = useState<
         "params" | "headers" | "body"
     >("headers");
@@ -61,6 +62,15 @@ function RequestDiv({ onSendRequest }: RequestProps) {
         }
     };
 
+    const handleResetRequest = () => {
+        setMethod("GET");
+        setUrl("");
+        setParams([{ id: "1", key: "", value: "", enabled: false }]);
+        setHeaders([{ id: "1", key: "", value: "", enabled: false }]);
+        setBody("");
+        onResetResponse();
+    };
+
     return (
         <main className="flex min-h-0 flex-1 flex-col bg-[#0d0d0d]">
             <RequestBar
@@ -69,6 +79,7 @@ function RequestDiv({ onSendRequest }: RequestProps) {
                 fullUrl={fullUrl}
                 setUrl={setUrl}
                 onSend={handleSendRequest}
+                onReset={handleResetRequest}
             />
 
             <RequestConfig

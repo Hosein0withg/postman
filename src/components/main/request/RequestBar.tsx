@@ -6,9 +6,10 @@ interface RequestBarProps {
     setUrl: React.Dispatch<React.SetStateAction<string>>;
     fullUrl: string;
     onSend: () => void;
+    onReset: () => void;
 }
 
-function RequestBar({ method, setMethod, fullUrl, setUrl, onSend }: RequestBarProps) {
+function RequestBar({ method, setMethod, fullUrl, setUrl, onSend, onReset }: RequestBarProps) {
     const methods: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 
     const handleEnter = (e: React.KeyboardEvent) => {
@@ -45,6 +46,12 @@ function RequestBar({ method, setMethod, fullUrl, setUrl, onSend }: RequestBarPr
                 onClick={onSend}
                 className="flex items-center gap-2 bg-[#6c63ff] hover:bg-[#5a52e0] text-white text-sm font-medium px-4 py-1.5 rounded transition-colors">
                 Send
+            </button>
+
+            <button
+                onClick={onReset}
+                className="flex items-center gap-2 bg-red-800 hover:bg-red-900 text-white text-sm font-medium px-4 py-1.5 rounded transition-colors">
+                Reset
             </button>
         </div>
     );

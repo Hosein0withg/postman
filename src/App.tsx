@@ -33,6 +33,11 @@ function App() {
         }
     };
 
+    const resetResponse = () => {
+        setResponse(undefined);
+        setIsLoading(false);
+    };
+
     return (
         <div className="flex h-screen">
             <Sidebar />
@@ -41,7 +46,7 @@ function App() {
                 <Tabs />
 
                 <div className="flex min-h-0 flex-1 flex-col">
-                    <RequestDiv onSendRequest={sendRequest} />
+                    <RequestDiv onSendRequest={sendRequest} onResetResponse={resetResponse} />
                     <ResponseViewer response={response} isLoading={isLoading} />
                 </div>
             </div>
