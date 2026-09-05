@@ -1,16 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "./components/sidebar/sidebar.tsx";
 import Tabs from "./components/main/tab/tab.tsx";
 import RequestDiv from "./components/main/request/RequestDiv.tsx";
 import ResponseViewer from "./components/main/response/ResponstViewer.tsx";
-import type { Request as RequestObj, ResponseData } from "./type.ts";
+import type { Request as RequestObj, ResponseData, AppData } from "./type.ts";
 import { sendApiRequest } from "./services/apiService.ts";
+import { loadAppData, createAutoSave } from "./utils/storage.ts";
+
+const autoSave = createAutoSave();
 
 function App() {
     const [response, setResponse] = useState<ResponseData | undefined>(
         undefined,
     );
     const [isLoading, setIsLoading] = useState(false);
+    const [appData, setAppData] = useState<AppData>(() => {
+        return loadAppData();
+    });
+    useEffect(() => {
+        autoSave.schedule(appData);
+        return () => {
+            autoSave.flush();
+        };
+    }, [appData]);
+
+    const updateAppData = (newData: Partial<AppData>) => {
+        setAppData((prevData) => ({ ...prevData, ...newData }));
+    };
 
     const sendRequest = async (requestData: RequestObj) => {
         setIsLoading(true);
@@ -36,6 +52,7 @@ function App() {
     const resetResponse = () => {
         setResponse(undefined);
         setIsLoading(false);
+        autoSave.cancel();
     };
 
     return (
@@ -46,7 +63,10 @@ function App() {
                 <Tabs />
 
                 <div className="flex min-h-0 flex-1 flex-col">
-                    <RequestDiv onSendRequest={sendRequest} onResetResponse={resetResponse} />
+                    <RequestDiv
+                        onSendRequest={sendRequest}
+                        onResetResponse={resetResponse}
+                    />
                     <ResponseViewer response={response} isLoading={isLoading} />
                 </div>
             </div>
