@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useEffect, useReducer, useState } from "react";
 import RequestBar from "./RequestBar";
 import RequestConfig from "./RequestConfig";
 import {
@@ -11,22 +11,53 @@ import {
 interface RequestProps {
     onSendRequest: (request: Request) => void;
     onResetResponse: () => void;
+    activeRequest?: Request | undefined;
+    onRestore: (request: Request) => void;
 }
 
-function RequestDiv({ onSendRequest, onResetResponse }: RequestProps) {
+type State = Request;
+
+type Action = { type: "SET_REQUEST"; payload: Request } | { type: "RESET" };
+
+const defaultRequest: Request = {
+    method: "GET",
+    fullUrl: "",
+    params: [{ id: "1", key: "", value: "", enabled: false }],
+    headers: [{ id: "1", key: "", value: "", enabled: false }],
+    body: "",
+};
+
+function requestReducer(state: State, action: Action): State {
+    switch (action.type) {
+        case "SET_REQUEST":
+            return action.payload;
+        case "RESET":
+            return defaultRequest;
+        default:
+            return state;
+    }
+}
+
+function RequestDiv({
+    onSendRequest,
+    onResetResponse,
+    activeRequest,
+    onRestore,
+}: RequestProps) {
     const [activeConfigTab, setActiveConfigTab] = useState<
         "params" | "headers" | "body"
     >("headers");
+    const [localRequest, dispatch] = useReducer(
+        requestReducer,
+        activeRequest || defaultRequest,
+    );
 
-    const [method, setMethod] = useState<HttpMethod>("GET");
-    const [url, setUrl] = useState<string>("");
-    const [params, setParams] = useState<Parameter[]>([
-        { id: "1", key: "", value: "", enabled: false },
-    ]);
-    const [headers, setHeaders] = useState<Header[]>([
-        { id: "1", key: "", value: "", enabled: false },
-    ]);
-    const [body, setBody] = useState<string>("");
+    useEffect(() => {
+        if (activeRequest) {
+            dispatch({ type: "SET_REQUEST", payload: activeRequest });
+        }
+    }, [activeRequest]);
+    const { method, fullUrl: url, params, headers, body } = localRequest;
 
     const fullUrl: string = useMemo(() => {
         if (!url) return "";
@@ -45,29 +76,44 @@ function RequestDiv({ onSendRequest, onResetResponse }: RequestProps) {
         }
     }, [url, params]);
 
+    const updateRequest = (updates: Partial<Request>) => {
+        const newRequest = { ...localRequest, ...updates };
+        dispatch({ type: "SET_REQUEST", payload: newRequest });
+        onRestore(newRequest);
+    };
+
+    const handleMethodChange = (newMethod: HttpMethod) =>
+        updateRequest({ method: newMethod });
+    const handleUrlChange = (newUrl: string) =>
+        updateRequest({ fullUrl: newUrl });
+    const handleParamsChange = (newParams: Parameter[]) =>
+        updateRequest({ params: newParams });
+    const handleHeadersChange = (newHeaders: Header[]) =>
+        updateRequest({ headers: newHeaders });
+    const handleBodyChange = (newBody: string) =>
+        updateRequest({ body: newBody });
+
     const handleSendRequest = () => {
         if (
             url.toLocaleLowerCase().startsWith("http:") ||
             url.toLocaleLowerCase().startsWith("https:")
         ) {
-            onSendRequest({
+            const requestData: Request = {
                 method,
                 fullUrl,
                 params: params,
                 headers,
                 body,
-            });
+            };
+            onSendRequest(requestData);
         } else {
             alert("Invalid URL");
         }
     };
 
     const handleResetRequest = () => {
-        setMethod("GET");
-        setUrl("");
-        setParams([{ id: "1", key: "", value: "", enabled: false }]);
-        setHeaders([{ id: "1", key: "", value: "", enabled: false }]);
-        setBody("");
+        dispatch({ type: "RESET" });
+        onRestore(defaultRequest);
         onResetResponse();
     };
 
@@ -75,9 +121,9 @@ function RequestDiv({ onSendRequest, onResetResponse }: RequestProps) {
         <main className="flex min-h-0 flex-1 flex-col bg-[#0d0d0d]">
             <RequestBar
                 method={method}
-                setMethod={setMethod}
+                setMethod={handleMethodChange}
                 fullUrl={fullUrl}
-                setUrl={setUrl}
+                setUrl={handleUrlChange}
                 onSend={handleSendRequest}
                 onReset={handleResetRequest}
             />
@@ -86,11 +132,11 @@ function RequestDiv({ onSendRequest, onResetResponse }: RequestProps) {
                 activeTab={activeConfigTab}
                 onTabChange={setActiveConfigTab}
                 params={params}
-                setParams={setParams}
+                setParams={handleParamsChange}
                 headers={headers}
-                setHeaders={setHeaders}
+                setHeaders={handleHeadersChange}
                 body={body}
-                setBody={setBody}
+                setBody={handleBodyChange}
             />
         </main>
     );

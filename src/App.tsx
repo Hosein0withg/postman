@@ -3,7 +3,12 @@ import Sidebar from "./components/sidebar/sidebar.tsx";
 import Tabs from "./components/main/tab/tab.tsx";
 import RequestDiv from "./components/main/request/RequestDiv.tsx";
 import ResponseViewer from "./components/main/response/ResponstViewer.tsx";
-import type { Request as RequestObj, ResponseData, AppData } from "./type.ts";
+import type {
+    Request as RequestObj,
+    ResponseData,
+    AppData,
+    HistoryItem,
+} from "./type.ts";
 import { sendApiRequest } from "./services/apiService.ts";
 import { loadAppData, createAutoSave } from "./utils/storage.ts";
 
@@ -33,6 +38,17 @@ function App() {
         setResponse(undefined);
         try {
             setResponse(await sendApiRequest(requestData));
+            const historyItem: HistoryItem = {
+                id: crypto.randomUUID(),
+                request: requestData,
+                timestamp: Date.now(),
+            };
+            const isDuplicate =
+                JSON.stringify(appData.history[0]?.request) ===
+                JSON.stringify(requestData);
+            if (!isDuplicate) {
+                updateAppData({ history: [historyItem, ...appData.history] });
+            }
         } catch (error) {
             console.error("Request failed:", error);
             setResponse({
@@ -55,9 +71,35 @@ function App() {
         autoSave.cancel();
     };
 
+    const restoreRequest = (request: RequestObj) => {
+        const updatedTabs = appData.tabs.map((tab) => {
+            if (tab.id === appData.activeTabId) {
+                return { ...tab, request: request };
+            }
+            return tab;
+        });
+        updateAppData({ tabs: updatedTabs, activeTabId: appData.activeTabId });
+    };
+
+    const clearHistory = () => {
+        updateAppData({ history: [] });
+    };
+
+    const activeTab = appData.tabs.find(
+        (tab) => tab.id === appData.activeTabId,
+    );
+    const activeRequest = activeTab?.request;
+
+
+
     return (
         <div className="flex h-screen">
-            <Sidebar />
+            <Sidebar
+                history={appData.history}
+                onRestore={restoreRequest}
+                onClear={clearHistory}
+                onResetResponse={resetResponse}
+            />
 
             <div className="flex min-w-0 flex-1 flex-col">
                 <Tabs />
@@ -66,6 +108,8 @@ function App() {
                     <RequestDiv
                         onSendRequest={sendRequest}
                         onResetResponse={resetResponse}
+                        activeRequest={activeRequest}
+                        onRestore={restoreRequest}
                     />
                     <ResponseViewer response={response} isLoading={isLoading} />
                 </div>

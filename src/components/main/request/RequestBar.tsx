@@ -2,9 +2,9 @@ import type { HttpMethod } from "../../../type";
 
 interface RequestBarProps {
     method: HttpMethod;
-    setMethod: React.Dispatch<React.SetStateAction<HttpMethod>>;
-    setUrl: React.Dispatch<React.SetStateAction<string>>;
+    setMethod: (method: HttpMethod) => void;
     fullUrl: string;
+    setUrl: (url: string) => void;
     onSend: () => void;
     onReset: () => void;
 }

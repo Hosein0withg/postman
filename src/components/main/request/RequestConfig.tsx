@@ -4,11 +4,11 @@ interface RequestConfigProps {
     activeTab: "params" | "headers" | "body";
     onTabChange: (tab: "params" | "headers" | "body") => void;
     params: Parameter[];
-    setParams: React.Dispatch<React.SetStateAction<Parameter[]>>;
+    setParams: (params: Parameter[]) => void;
     headers: Header[];
-    setHeaders: React.Dispatch<React.SetStateAction<Header[]>>;
+    setHeaders: (headers: Header[]) => void;
     body: string;
-    setBody: React.Dispatch<React.SetStateAction<string>>;
+    setBody: (body: string) => void;
 }
 
 interface ConfigItem {
@@ -29,17 +29,16 @@ function RequestConfig({
     setBody,
 }: RequestConfigProps) {
     const addItem = <T extends ConfigItem>(
-        setItems: React.Dispatch<React.SetStateAction<T[]>>,
+        setItems: (items: T[]) => void,
+        currentItems: T[], // Add this parameter
     ) => {
-        setItems((prevItems) => [
-            ...prevItems,
-            {
-                id: Date.now().toString(),
-                key: "",
-                value: "",
-                enabled: true,
-            } as T,
-        ]);
+        const newItem = {
+            id: crypto.randomUUID().toString(),
+            key: "",
+            value: "",
+            enabled: true,
+        } as T;
+        setItems([...currentItems, newItem]);
     };
 
     const updateItem = <T extends ConfigItem>(
@@ -47,7 +46,7 @@ function RequestConfig({
         field: keyof T,
         value: string | boolean,
         items: T[],
-        setItems: React.Dispatch<React.SetStateAction<T[]>>,
+        setItems: (items: T[]) => void,
     ) => {
         setItems(
             items.map((item) =>
@@ -59,7 +58,7 @@ function RequestConfig({
     const removeItem = <T extends ConfigItem>(
         id: string,
         items: T[],
-        setItems: React.Dispatch<React.SetStateAction<T[]>>,
+        setItems: (items: T[]) => void,
     ) => {
         setItems(items.filter((item) => item.id !== id));
     };
@@ -67,7 +66,7 @@ function RequestConfig({
     const toggleItem = <T extends ConfigItem>(
         id: string,
         items: T[],
-        setItems: React.Dispatch<React.SetStateAction<T[]>>,
+        setItems: (items: T[]) => void,
     ) => {
         setItems(
             items.map((item) =>
@@ -78,7 +77,7 @@ function RequestConfig({
 
     const renderItems = <T extends ConfigItem>(
         items: T[],
-        setItems: React.Dispatch<React.SetStateAction<T[]>>,
+        setItems: (items: T[]) => void,
         label: string,
     ) => (
         <div className="p-3 space-y-2">
@@ -143,7 +142,7 @@ function RequestConfig({
             ))}
 
             <button
-                onClick={() => addItem(setItems)}
+                onClick={() => addItem(setItems, items)}
                 className="flex items-center gap-1.5 text-sm text-[#6c63ff] hover:text-[#8a84ff] transition-colors mt-1"
             >
                 + add {label}
