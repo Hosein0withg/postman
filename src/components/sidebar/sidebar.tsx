@@ -1,43 +1,41 @@
 import { useState } from "react";
 import HistoryDiv from "./HistoryDiv";
-import type { HistoryItem, Request } from "../../type";
+import CollectionDiv from "./CollectionDiv";
+import type { HistoryItem, Request, Collection } from "../../type";
 
 interface SidebarProps {
     history: HistoryItem[];
+    collections: Collection[];
     onRestore: (request: Request) => void;
     onClear: () => void;
     onResetResponse: () => void;
+    onCreateCollection: (name: string) => void;
+    onRenameCollection: (id: string, name: string) => void;
+    onDeleteCollection: (id: string) => void;
+    onRemoveRequestFromCollection: (
+        collectionId: string,
+        requestIndex: number,
+    ) => void;
 }
 
-// const MIN_WIDTH = 150;
-// const MAX_WIDTH = 350;
-// const DEFAULT_WIDTH = 250;
-
-function Sidebar({ history, onRestore, onClear, onResetResponse }: SidebarProps) {
+function Sidebar({
+    history,
+    collections,
+    onRestore,
+    onClear,
+    onResetResponse,
+    onCreateCollection,
+    onRenameCollection,
+    onDeleteCollection,
+    onRemoveRequestFromCollection,
+}: SidebarProps) {
     const [activeView, setActiveView] = useState<"history" | "collections">(
-        "history",
+        "collections",
     );
-    // const [isDragging, setIsDragging] = useState(false);
-    // const sidebarRef = useRef<HTMLDivElement>(null);
-
-    // const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    //     e.preventDefault();
-    //     setIsDragging(true);
-    // };
 
     return (
-        <aside className="w-60 bg-[#141414] border-r border-[#2a2a2a] flex flex-col shrink-0">
-            <nav className="flex-1 p-3 space-y-1">
-                <button
-                    onClick={() => setActiveView("history")}
-                    className={`flex-1 py-2 px-3 text-sm font-medium transition-colors ${
-                        activeView === "history"
-                            ? "text-white border-b-2 border-[#6c63ff]"
-                            : "text-gray-500 hover:text-gray-300"
-                    }`}
-                >
-                    History
-                </button>
+        <aside className="w-70 bg-[#141414] border-r border-[#2a2a2a] flex flex-col shrink-0">
+            <nav className="flex p-3 space-y-1">
                 <button
                     onClick={() => setActiveView("collections")}
                     className={`flex-1 py-2 px-3 text-sm font-medium transition-colors ${
@@ -48,16 +46,36 @@ function Sidebar({ history, onRestore, onClear, onResetResponse }: SidebarProps)
                 >
                     Collections
                 </button>
+                <button
+                    onClick={() => setActiveView("history")}
+                    className={`flex-1 py-2 px-3 text-sm font-medium transition-colors ${
+                        activeView === "history"
+                            ? "text-white border-b-2 border-[#6c63ff]"
+                            : "text-gray-500 hover:text-gray-300"
+                    }`}
+                >
+                    History
+                </button>
             </nav>
-            {activeView === "history" && (
-                <HistoryDiv
-                    history={history}
-                    onRestore={onRestore}
-                    onClear={onClear}
-                    onResetResponse={onResetResponse}
-                />
-            )}
-            {activeView === "collections" && <div></div>}
+            <div className="flex-1 overflow-hidden">
+                {activeView === "history" ? (
+                    <HistoryDiv
+                        history={history}
+                        onRestore={onRestore}
+                        onClear={onClear}
+                        onResetResponse={onResetResponse}
+                    />
+                ) : (
+                    <CollectionDiv
+                        collections={collections}
+                        onCreate={onCreateCollection}
+                        onRename={onRenameCollection}
+                        onDelete={onDeleteCollection}
+                        onRemoveRequest={onRemoveRequestFromCollection}
+                        onLoadRequest={onRestore}
+                    />
+                )}
+            </div>
         </aside>
     );
 }

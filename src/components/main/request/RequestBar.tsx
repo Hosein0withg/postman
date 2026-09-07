@@ -1,4 +1,5 @@
-import type { HttpMethod } from "../../../type";
+import { useState } from "react";
+import type { HttpMethod, Request, Collection } from "../../../type";
 
 interface RequestBarProps {
     method: HttpMethod;
@@ -7,10 +8,33 @@ interface RequestBarProps {
     setUrl: (url: string) => void;
     onSend: () => void;
     onReset: () => void;
+    collections: Collection[];
+    localRequest: Request;
+    onSaveToCollection: (collectionId: string, request: Request) => void;
 }
 
-function RequestBar({ method, setMethod, fullUrl, setUrl, onSend, onReset }: RequestBarProps) {
+function RequestBar({
+    method,
+    setMethod,
+    fullUrl,
+    setUrl,
+    onSend,
+    onReset,
+    collections,
+    localRequest,
+    onSaveToCollection,
+}: RequestBarProps) {
     const methods: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+    const [selectedCollectionId, setSelectedCollectionId] =
+        useState<string>("");
+
+    const handleSaveToCollection = () => {
+        if (!selectedCollectionId) {
+            alert("Please select a collection");
+            return;
+        }
+        onSaveToCollection(selectedCollectionId, localRequest);
+    };
 
     const handleEnter = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
@@ -44,14 +68,36 @@ function RequestBar({ method, setMethod, fullUrl, setUrl, onSend, onReset }: Req
 
             <button
                 onClick={onSend}
-                className="flex items-center gap-2 bg-[#6c63ff] hover:bg-[#5a52e0] text-white text-sm font-medium px-4 py-1.5 rounded transition-colors">
+                className="flex items-center gap-2 bg-[#6c63ff] hover:bg-[#5a52e0] text-white text-sm font-medium px-4 py-1.5 rounded transition-colors"
+            >
                 Send
             </button>
 
             <button
                 onClick={onReset}
-                className="flex items-center gap-2 bg-red-800 hover:bg-red-900 text-white text-sm font-medium px-4 py-1.5 rounded transition-colors">
+                className="flex items-center gap-2 bg-red-800 hover:bg-red-900 text-white text-sm font-medium px-4 py-1.5 rounded transition-colors"
+            >
                 Reset
+            </button>
+
+            <select
+                value={selectedCollectionId}
+                onChange={(e) => setSelectedCollectionId(e.target.value)}
+                className="bg-[#1e1e1e] text-white w-fit text-sm px-2 py-1 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff]"
+            >
+                <option value="">Save to Collection</option>
+                {collections.map((col) => (
+                    <option key={col.id} value={col.id}>
+                        {col.name}
+                    </option>
+                ))}
+            </select>
+
+            <button
+                onClick={handleSaveToCollection}
+                className="flex items-center gap-2 bg-[#6c63ff] hover:bg-[#5a52e0] text-white text-sm font-medium px-4 py-1.5 rounded transition-colors"
+            >
+                Save
             </button>
         </div>
     );

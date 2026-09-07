@@ -90,15 +90,51 @@ function App() {
     );
     const activeRequest = activeTab?.request;
 
+    const createCollection = (name: string) => {
+        const newCollection = { id: crypto.randomUUID(), name: name, requests: [] };
+        updateAppData({ collections: [...appData.collections, newCollection] });
+    };
 
+    const renameCollection = (id: string, name: string) => {
+        const updatedCollections = appData.collections.map((collection) =>
+            collection.id === id ? { ...collection, name: name } : collection
+        );
+        updateAppData({ collections: updatedCollections });
+    };
+
+    const deleteCollection = (id: string) => {
+        const updatedCollections = appData.collections.filter((collection) =>
+            collection.id !== id
+        );
+        updateAppData({ collections: updatedCollections });
+    };
+
+    const addRequestToCollection = (collectionId: string, request: RequestObj) => {
+        const updatedCollections = appData.collections.map((collection) =>
+            collection.id === collectionId ? { ...collection, requests: [...collection.requests, request] } : collection
+        );
+        updateAppData({ collections: updatedCollections });
+    };
+
+    const removeRequestFromCollection = (collectionId: string, requestIndex: number) => {
+        const updatedCollections = appData.collections.map((collection) =>
+            collection.id === collectionId ? { ...collection, requests: collection.requests.filter((_, index) => index !== requestIndex) } : collection
+        );
+        updateAppData({ collections: updatedCollections });
+    };
 
     return (
         <div className="flex h-screen">
             <Sidebar
                 history={appData.history}
+                collections={appData.collections}
                 onRestore={restoreRequest}
                 onClear={clearHistory}
                 onResetResponse={resetResponse}
+                onCreateCollection={createCollection}
+                onRenameCollection={renameCollection}
+                onDeleteCollection={deleteCollection}
+                onRemoveRequestFromCollection={removeRequestFromCollection}
             />
 
             <div className="flex min-w-0 flex-1 flex-col">
@@ -110,6 +146,8 @@ function App() {
                         onResetResponse={resetResponse}
                         activeRequest={activeRequest}
                         onRestore={restoreRequest}
+                        onSaveToCollection={addRequestToCollection}
+                        collections={appData.collections}
                     />
                     <ResponseViewer response={response} isLoading={isLoading} />
                 </div>

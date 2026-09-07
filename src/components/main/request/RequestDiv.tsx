@@ -6,6 +6,7 @@ import {
     type Header,
     type Parameter,
     type HttpMethod,
+    type Collection,
 } from "../../../type";
 
 interface RequestProps {
@@ -13,6 +14,8 @@ interface RequestProps {
     onResetResponse: () => void;
     activeRequest?: Request | undefined;
     onRestore: (request: Request) => void;
+    onSaveToCollection: (collectionId: string, request: Request) => void;
+    collections: Collection[];
 }
 
 type State = Request;
@@ -43,6 +46,8 @@ function RequestDiv({
     onResetResponse,
     activeRequest,
     onRestore,
+    onSaveToCollection,
+    collections,
 }: RequestProps) {
     const [activeConfigTab, setActiveConfigTab] = useState<
         "params" | "headers" | "body"
@@ -126,6 +131,9 @@ function RequestDiv({
                 setUrl={handleUrlChange}
                 onSend={handleSendRequest}
                 onReset={handleResetRequest}
+                collections={collections}
+                localRequest={localRequest}
+                onSaveToCollection={onSaveToCollection}
             />
 
             <RequestConfig
