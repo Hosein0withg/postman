@@ -30,6 +30,7 @@ export default function HistoryDiv({
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
                 {history.map((item) => (
                     <div
+                        key={item.id}
                         onClick={() => (onRestore(item.request), onResetResponse())}
                         className="cursor-pointer hover:bg-[#252525] p-2 rounded text-sm transition-colors"
                     >

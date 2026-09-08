@@ -1,4 +1,4 @@
-import type { AppData, Collection, HistoryItem, Tab } from "../type";
+import type { AppData } from "../type";
 
 const LOCAL_STORAGE_KEY = "appData";
 const defaultAppData: AppData = {
@@ -95,33 +95,6 @@ export const saveAppData = (data: AppData): void => {
     }
 };
 
-export const saveCollections = (collections: Collection[]): void => {
-    try {
-        const updatedData = { ...loadAppData(), collections };
-        saveAppData(updatedData);
-    } catch (error) {
-        console.error("Error saving collections:", error);
-    }
-};
-
-export const saveHistory = (history: HistoryItem[]): void => {
-    try {
-        const updatedData = { ...loadAppData(), history };
-        saveAppData(updatedData);
-    } catch (error) {
-        console.error("Error saving history:", error);
-    }
-};
-
-export const saveTabs = (tabs: Tab[], activeTabId: string): void => {
-    try {
-        const updatedData = { ...loadAppData(), tabs, activeTabId };
-        saveAppData(updatedData);
-    } catch (error) {
-        console.error("Error saving tabs:", error);
-    }
-};
-
 export const loadAppData = (): AppData => {
     try {
         const data = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -136,33 +109,5 @@ export const loadAppData = (): AppData => {
     } catch (error) {
         console.error("Error loading app data:", error);
         return defaultAppData;
-    }
-};
-
-export const loadCollections = (): Collection[] => {
-    try {
-        return loadAppData().collections || [];
-    } catch (error) {
-        console.error("Error loading collections:", error);
-        return [];
-    }
-};
-
-export const loadHistory = (): HistoryItem[] => {
-    try {
-        return loadAppData().history || [];
-    } catch (error) {
-        console.error("Error loading history:", error);
-        return [];
-    }
-};
-
-export const loadTabs = (): { tabs: Tab[]; activeTabId: string } => {
-    try {
-        const data = loadAppData();
-        return { tabs: data.tabs || [], activeTabId: data.activeTabId || "" };
-    } catch (error) {
-        console.error("Error loading tabs:", error);
-        return { tabs: [], activeTabId: "" };
     }
 };

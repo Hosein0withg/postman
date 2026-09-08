@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "./components/sidebar/sidebar.tsx";
-import Tabs from "./components/main/tab/tab.tsx";
+import TabDiv from "./components/main/tab/TabDiv.tsx";
 import RequestDiv from "./components/main/request/RequestDiv.tsx";
 import ResponseViewer from "./components/main/response/ResponstViewer.tsx";
 import type {
@@ -8,6 +8,7 @@ import type {
     ResponseData,
     AppData,
     HistoryItem,
+    Tab,
 } from "./type.ts";
 import { sendApiRequest } from "./services/apiService.ts";
 import { loadAppData, createAutoSave } from "./utils/storage.ts";
@@ -72,13 +73,13 @@ function App() {
     };
 
     const restoreRequest = (request: RequestObj) => {
-        const updatedTabs = appData.tabs.map((tab) => {
-            if (tab.id === appData.activeTabId) {
-                return { ...tab, request: request };
-            }
-            return tab;
-        });
-        updateAppData({ tabs: updatedTabs, activeTabId: appData.activeTabId });
+        const index = parseInt(appData.tabs[appData.tabs.length - 1]?.title.split(" ")[1]) + 1;
+        const newTab: Tab = {
+            id: crypto.randomUUID(),
+            title: `Tab ${index}`,
+            request: request,
+        };
+        updateAppData({ tabs: [...appData.tabs, newTab], activeTabId: newTab.id });
     };
 
     const clearHistory = () => {
@@ -91,36 +92,84 @@ function App() {
     const activeRequest = activeTab?.request;
 
     const createCollection = (name: string) => {
-        const newCollection = { id: crypto.randomUUID(), name: name, requests: [] };
+        const newCollection = {
+            id: crypto.randomUUID(),
+            name: name,
+            requests: [],
+        };
         updateAppData({ collections: [...appData.collections, newCollection] });
     };
 
     const renameCollection = (id: string, name: string) => {
         const updatedCollections = appData.collections.map((collection) =>
-            collection.id === id ? { ...collection, name: name } : collection
+            collection.id === id ? { ...collection, name: name } : collection,
         );
         updateAppData({ collections: updatedCollections });
     };
 
     const deleteCollection = (id: string) => {
-        const updatedCollections = appData.collections.filter((collection) =>
-            collection.id !== id
+        const updatedCollections = appData.collections.filter(
+            (collection) => collection.id !== id,
         );
         updateAppData({ collections: updatedCollections });
     };
 
-    const addRequestToCollection = (collectionId: string, request: RequestObj) => {
+    const addRequestToCollection = (
+        collectionId: string,
+        request: RequestObj,
+    ) => {
         const updatedCollections = appData.collections.map((collection) =>
-            collection.id === collectionId ? { ...collection, requests: [...collection.requests, request] } : collection
+            collection.id === collectionId
+                ? { ...collection, requests: [...collection.requests, request] }
+                : collection,
         );
         updateAppData({ collections: updatedCollections });
     };
 
-    const removeRequestFromCollection = (collectionId: string, requestIndex: number) => {
+    const removeRequestFromCollection = (
+        collectionId: string,
+        requestIndex: number,
+    ) => {
         const updatedCollections = appData.collections.map((collection) =>
-            collection.id === collectionId ? { ...collection, requests: collection.requests.filter((_, index) => index !== requestIndex) } : collection
+            collection.id === collectionId
+                ? {
+                      ...collection,
+                      requests: collection.requests.filter(
+                          (_, index) => index !== requestIndex,
+                      ),
+                  }
+                : collection,
         );
         updateAppData({ collections: updatedCollections });
+    };
+
+    const addNewTab = () => {
+        const index = parseInt(appData.tabs[appData.tabs.length - 1]?.title.split(" ")[1]) + 1;
+        const newTab: Tab = {
+            id: crypto.randomUUID(),
+            title: `Tab ${index}`,
+            request: {
+                method: "GET",
+                fullUrl: "",
+                params: [{ id: "1", key: "", value: "", enabled: false }],
+                headers: [{ id: "1", key: "", value: "", enabled: false }],
+                body: "",
+            },
+        };
+        updateAppData({ tabs: [...appData.tabs, newTab], activeTabId: newTab.id });
+    };
+
+    const switchTab = (tabId: string) => {
+        updateAppData({ activeTabId: tabId });
+        resetResponse();
+    };
+
+    const closeTab = (tabId: string) => {
+        if (appData.tabs.length === 1) return;
+        let index = ((appData.tabs.findIndex((tab) => tab.id === tabId)) - 1);
+        index = index < 0 ? 0 : index;
+        const updatedTabs = appData.tabs.filter((tab) => tab.id !== tabId);
+        updateAppData({ tabs: updatedTabs, activeTabId: updatedTabs[index].id });
     };
 
     return (
@@ -138,7 +187,13 @@ function App() {
             />
 
             <div className="flex min-w-0 flex-1 flex-col">
-                <Tabs />
+                <TabDiv
+                    tabs={appData.tabs}
+                    activeTabId={appData.activeTabId}
+                    onAddTab={addNewTab}
+                    onSwitchTab={switchTab}
+                    onCloseTab={closeTab}
+                />
 
                 <div className="flex min-h-0 flex-1 flex-col">
                     <RequestDiv
