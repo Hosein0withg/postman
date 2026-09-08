@@ -21,8 +21,28 @@ function App() {
     );
     const [isLoading, setIsLoading] = useState(false);
     const [appData, setAppData] = useState<AppData>(() => {
-        return loadAppData();
+        const loaded = loadAppData();
+        return {
+            ...loaded,
+            tabs: [
+                {
+                    id: "tab_1",
+                    title: "Tab 1",
+                    request: {
+                        method: "GET",
+                        fullUrl: "",
+                        params: [],
+                        headers: [],
+                        body: "",
+                    },
+                },
+            ],
+            activeTabId: "tab_1",
+        };
     });
+    const [tabResponses, setTabResponses] = useState<
+        Record<string, ResponseData | undefined>
+    >({});
     useEffect(() => {
         autoSave.schedule(appData);
         return () => {
@@ -38,7 +58,12 @@ function App() {
         setIsLoading(true);
         setResponse(undefined);
         try {
-            setResponse(await sendApiRequest(requestData));
+            const result = await sendApiRequest(requestData);
+            setResponse(result);
+            setTabResponses((prev) => ({
+                ...prev,
+                [appData.activeTabId]: result,
+            }));
             const historyItem: HistoryItem = {
                 id: crypto.randomUUID(),
                 request: requestData,
@@ -69,17 +94,11 @@ function App() {
     const resetResponse = () => {
         setResponse(undefined);
         setIsLoading(false);
+        setTabResponses((prev) => ({
+            ...prev,
+            [appData.activeTabId]: undefined,
+        }));
         autoSave.cancel();
-    };
-
-    const restoreRequest = (request: RequestObj) => {
-        const index = parseInt(appData.tabs[appData.tabs.length - 1]?.title.split(" ")[1]) + 1;
-        const newTab: Tab = {
-            id: crypto.randomUUID(),
-            title: `Tab ${index}`,
-            request: request,
-        };
-        updateAppData({ tabs: [...appData.tabs, newTab], activeTabId: newTab.id });
     };
 
     const clearHistory = () => {
@@ -144,7 +163,10 @@ function App() {
     };
 
     const addNewTab = () => {
-        const index = parseInt(appData.tabs[appData.tabs.length - 1]?.title.split(" ")[1]) + 1;
+        const index =
+            parseInt(
+                appData.tabs[appData.tabs.length - 1]?.title.split(" ")[1],
+            ) + 1;
         const newTab: Tab = {
             id: crypto.randomUUID(),
             title: `Tab ${index}`,
@@ -156,20 +178,45 @@ function App() {
                 body: "",
             },
         };
-        updateAppData({ tabs: [...appData.tabs, newTab], activeTabId: newTab.id });
+        updateAppData({
+            tabs: [...appData.tabs, newTab],
+            activeTabId: newTab.id,
+        });
+        setResponse(undefined);
     };
 
     const switchTab = (tabId: string) => {
+        if (appData.activeTabId) {
+            setTabResponses((prev) => ({
+                ...prev,
+                [appData.activeTabId]: response,
+            }));
+        }
         updateAppData({ activeTabId: tabId });
-        resetResponse();
+        setResponse(tabResponses[tabId] ?? undefined);
     };
 
     const closeTab = (tabId: string) => {
         if (appData.tabs.length === 1) return;
-        let index = ((appData.tabs.findIndex((tab) => tab.id === tabId)) - 1);
+        setTabResponses((prev) => {
+            const newResponses = { ...prev };
+            delete newResponses[tabId];
+            return newResponses;
+        });
+        let index = appData.tabs.findIndex((tab) => tab.id === tabId) - 1;
         index = index < 0 ? 0 : index;
         const updatedTabs = appData.tabs.filter((tab) => tab.id !== tabId);
-        updateAppData({ tabs: updatedTabs, activeTabId: updatedTabs[index].id });
+        updateAppData({
+            tabs: updatedTabs,
+            activeTabId: updatedTabs[index].id,
+        });
+    };
+
+    const updateActiveTabRequest = (request: RequestObj) => {
+        const updatedTabs = appData.tabs.map((tab) =>
+            tab.id === appData.activeTabId ? { ...tab, request } : tab,
+        );
+        updateAppData({ tabs: updatedTabs });
     };
 
     return (
@@ -177,7 +224,7 @@ function App() {
             <Sidebar
                 history={appData.history}
                 collections={appData.collections}
-                onRestore={restoreRequest}
+                onRestore={updateActiveTabRequest}
                 onClear={clearHistory}
                 onResetResponse={resetResponse}
                 onCreateCollection={createCollection}
@@ -200,9 +247,9 @@ function App() {
                         onSendRequest={sendRequest}
                         onResetResponse={resetResponse}
                         activeRequest={activeRequest}
-                        onRestore={restoreRequest}
                         onSaveToCollection={addRequestToCollection}
                         collections={appData.collections}
+                        onUpdateActiveTabRequest={updateActiveTabRequest}
                     />
                     <ResponseViewer response={response} isLoading={isLoading} />
                 </div>

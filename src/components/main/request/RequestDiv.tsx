@@ -13,9 +13,9 @@ interface RequestProps {
     onSendRequest: (request: Request) => void;
     onResetResponse: () => void;
     activeRequest?: Request | undefined;
-    onRestore: (request: Request) => void;
     onSaveToCollection: (collectionId: string, request: Request) => void;
     collections: Collection[];
+    onUpdateActiveTabRequest: (request: Request) => void;
 }
 
 type State = Request;
@@ -45,9 +45,9 @@ function RequestDiv({
     onSendRequest,
     onResetResponse,
     activeRequest,
-    onRestore,
     onSaveToCollection,
     collections,
+    onUpdateActiveTabRequest,
 }: RequestProps) {
     const [activeConfigTab, setActiveConfigTab] = useState<
         "params" | "headers" | "body"
@@ -84,7 +84,7 @@ function RequestDiv({
     const updateRequest = (updates: Partial<Request>) => {
         const newRequest = { ...localRequest, ...updates };
         dispatch({ type: "SET_REQUEST", payload: newRequest });
-        onRestore(newRequest);
+        onUpdateActiveTabRequest(newRequest);
     };
 
     const handleMethodChange = (newMethod: HttpMethod) =>
@@ -118,7 +118,7 @@ function RequestDiv({
 
     const handleResetRequest = () => {
         dispatch({ type: "RESET" });
-        onRestore(defaultRequest);
+        onUpdateActiveTabRequest(defaultRequest);
         onResetResponse();
     };
 
