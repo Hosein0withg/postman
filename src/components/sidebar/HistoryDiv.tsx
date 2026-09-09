@@ -13,16 +13,37 @@ export default function HistoryDiv({
     onClear,
     onResetResponse,
 }: HistoryDivProps) {
+    const getMethodColors = (method: string) => {
+        switch (method) {
+            case "GET":
+                return "bg-(--method-get)/20 text-(--method-get)";
+            case "POST":
+                return "bg-(--method-post)/20 text-(--method-post)";
+            case "PUT":
+                return "bg-(--method-put)/20 text-(--method-put)";
+            case "DELETE":
+                return "bg-(--method-delete)/20 text-(--method-delete)";
+            case "PATCH":
+                return "bg-(--method-patch)/20 text-(--method-patch)";
+            default:
+                return "bg-(--text-muted)/20 text-(--text-muted)";
+        }
+    };
+
     if (history.length === 0) {
-        return <div className="p-4 text-gray-500 text-sm">No history yet</div>;
+        return (
+            <div className="p-4 text-(--text-muted) text-sm">
+                No history yet
+            </div>
+        );
     }
 
     return (
         <div className="flex flex-col h-full">
-            <div className="flex justify-center items-center p-2 border-b border-[#2a2a2a]">
+            <div className="flex justify-center items-center p-2 border-b border-(--border-color)">
                 <button
                     onClick={onClear}
-                    className="text-xs text-red-400 hover:text-red-300"
+                    className="text-xs text-(--danger) hover:text-(--danger-hover)"
                 >
                     Clear History
                 </button>
@@ -31,30 +52,25 @@ export default function HistoryDiv({
                 {history.map((item) => (
                     <div
                         key={item.id}
-                        onClick={() => (onRestore(item.request), onResetResponse())}
-                        className="cursor-pointer hover:bg-[#252525] p-2 rounded text-sm transition-colors"
+                        onClick={() => (
+                            onRestore(item.request),
+                            onResetResponse()
+                        )}
+                        className="cursor-pointer hover:bg-(--bg-hover) p-2 rounded text-sm transition-colors"
                     >
                         <div className="flex items-center gap-2">
                             <span
-                                className={`font-mono text-xs px-1.5 py-0.5 rounded ${
-                                    item.request.method === "GET"
-                                        ? "bg-blue-500/20 text-blue-400"
-                                        : item.request.method === "POST"
-                                          ? "bg-green-500/20 text-green-400"
-                                          : item.request.method === "PUT"
-                                            ? "bg-yellow-500/20 text-yellow-400"
-                                            : item.request.method === "DELETE"
-                                              ? "bg-red-500/20 text-red-400"
-                                              : "bg-gray-500/20 text-gray-400"
-                                }`}
+                                className={`font-mono text-xs px-1.5 py-0.5 rounded ${getMethodColors(
+                                    item.request.method,
+                                )}`}
                             >
                                 {item.request.method}
                             </span>
-                            <span className="text-gray-300 truncate flex-1">
+                            <span className="text-(--text-secondary) truncate flex-1">
                                 {item.request.fullUrl}
                             </span>
                         </div>
-                        <div className="text-xs text-gray-500 mt-0.5">
+                        <div className="text-xs text-(--text-muted) mt-0.5">
                             {new Date(item.timestamp).toLocaleString()}
                         </div>
                     </div>

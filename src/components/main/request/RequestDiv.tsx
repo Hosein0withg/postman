@@ -123,7 +123,7 @@ function RequestDiv({
     };
 
     return (
-        <main className="flex min-h-0 flex-1 flex-col bg-[#0d0d0d]">
+        <main className="flex min-h-0 flex-1 flex-col">
             <RequestBar
                 method={method}
                 setMethod={handleMethodChange}

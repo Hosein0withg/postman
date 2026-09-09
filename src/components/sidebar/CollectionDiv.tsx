@@ -50,28 +50,28 @@ export default function CollectionDiv({
                     value={newCollectionName}
                     onChange={(e) => setNewCollectionName(e.target.value)}
                     placeholder="New collection name"
-                    className="flex-1 bg-[#1e1e1e] text-white text-sm px-2 py-1 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff]"
+                    className="flex-1 bg-(--bg-input) text-(--text-primary) text-sm px-2 py-1 rounded border border-(--border-color) focus:outline-none focus:ring-1 focus:ring-(--accent) placeholder:text-(--text-muted)"
                     onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 />
                 <button
                     onClick={handleCreate}
-                    className="px-3 py-1 bg-[#6c63ff] text-white text-sm rounded hover:bg-[#5a52e0]"
+                    className="px-3 py-1 bg-(--accent) text-(--text-on-accent) text-sm rounded hover:bg-(--accent-hover)"
                 >
                     Create
                 </button>
             </div>
             <div className="flex-1 overflow-y-auto space-y-1">
                 {collections.length === 0 && (
-                    <div className="text-gray-500 text-sm text-center py-4">
+                    <div className="text-(--text-muted) text-sm text-center py-4">
                         No collections yet
                     </div>
                 )}
                 {collections.map((collection) => (
                     <div
                         key={collection.id}
-                        className="border border-[#2a2a2a] rounded"
+                        className="border border-(--border-color) rounded"
                     >
-                        <div className="flex items-center justify-between p-2 hover:bg-[#252525] cursor-pointer">
+                        <div className="flex items-center justify-between p-2 hover:bg-(--bg-hover) cursor-pointer">
                             <div className="flex items-center gap-2 flex-1">
                                 <button
                                     onClick={() =>
@@ -81,7 +81,7 @@ export default function CollectionDiv({
                                                 : collection.id,
                                         )
                                     }
-                                    className="text-gray-400 hover:text-white"
+                                    className="text-(--text-muted) hover:text-(--text-primary)"
                                 >
                                     {expandedId === collection.id ? "▼" : "▶"}
                                 </button>
@@ -99,11 +99,11 @@ export default function CollectionDiv({
                                             e.key === "Enter" &&
                                             handleRenameSave(collection.id)
                                         }
-                                        className="bg-[#1e1e1e] text-white text-sm px-1 py-0.5 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff]"
+                                        className="bg-(--bg-input) text-(--text-primary) text-sm px-1 py-0.5 rounded border border-(--border-color) focus:outline-none focus:ring-1 focus:ring-(--accent)"
                                         autoFocus
                                     />
                                 ) : (
-                                    <span className="text-sm text-gray-300 truncate flex-1">
+                                    <span className="text-sm text-(--text-secondary) truncate flex-1">
                                         {collection.name}
                                     </span>
                                 )}
@@ -113,14 +113,14 @@ export default function CollectionDiv({
                                     onClick={() =>
                                         handleRenameStart(collection)
                                     }
-                                    className="text-xs text-gray-400 hover:text-white px-1"
+                                    className="text-xs text-(--text-muted) hover:text-(--text-primary) px-1"
                                     title="Rename"
                                 >
                                     ✏️
                                 </button>
                                 <button
                                     onClick={() => onDelete(collection.id)}
-                                    className="text-xs text-gray-400 hover:text-red-400 px-1"
+                                    className="text-xs text-(--text-muted) hover:text-(--danger) px-1"
                                     title="Delete"
                                 >
                                     🗑️
@@ -129,20 +129,20 @@ export default function CollectionDiv({
                         </div>
 
                         {expandedId === collection.id && (
-                            <div className="p-2 pt-0 border-t border-[#2a2a2a] space-y-1">
+                            <div className="p-2 pt-0 border-t border-(--border-color) space-y-1">
                                 {collection.requests.length === 0 && (
-                                    <div className="text-gray-500 text-xs py-1">
+                                    <div className="text-(--text-muted) text-xs py-1">
                                         No requests
                                     </div>
                                 )}
                                 {collection.requests.map((req, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center justify-between hover:bg-[#1a1a1a] p-1 rounded"
+                                        className="flex items-center justify-between hover:bg-(--bg-elevated) p-1 rounded"
                                     >
                                         <button
                                             onClick={() => onLoadRequest(req)}
-                                            className="flex-1 text-left text-xs text-gray-300 truncate"
+                                            className="flex-1 text-left text-xs text-(--text-secondary) truncate"
                                         >
                                             {req.method} {req.fullUrl}
                                         </button>
@@ -153,7 +153,7 @@ export default function CollectionDiv({
                                                     index,
                                                 )
                                             }
-                                            className="text-xs text-gray-500 hover:text-red-400"
+                                            className="text-xs text-(--text-muted) hover:text-(--danger)"
                                         >
                                             ✕
                                         </button>

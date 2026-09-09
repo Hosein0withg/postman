@@ -91,8 +91,8 @@ function RequestConfig({
                             onClick={() => toggleItem(item.id, items, setItems)}
                             className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
                                 item.enabled
-                                    ? "border-[#6c63ff] bg-[#6c63ff] text-white"
-                                    : "border-[#3a3a3a] text-transparent"
+                                    ? "border-(--accent) bg-(--accent) text-(--text-on-accent)"
+                                    : "border-(--border-color) text-transparent"
                             }`}
                         >
                             {item.enabled ? "✔" : ""}
@@ -100,7 +100,7 @@ function RequestConfig({
 
                         <button
                             onClick={() => removeItem(item.id, items, setItems)}
-                            className="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors rounded text-base"
+                            className="w-5 h-5 flex items-center justify-center text-(--text-muted) hover:text-(--danger) transition-colors rounded text-base"
                             title={`Remove ${label}`}
                         >
                             🗑️
@@ -120,7 +120,7 @@ function RequestConfig({
                             )
                         }
                         placeholder="key"
-                        className="bg-[#1e1e1e] text-white text-sm px-2 py-1.5 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500"
+                        className="bg-(--bg-input) text-(--text-primary) text-sm px-2 py-1.5 rounded border border-(--border-color) focus:outline-none focus:ring-1 focus:ring-(--accent) placeholder:text-(--text-muted)"
                     />
 
                     <input
@@ -136,14 +136,14 @@ function RequestConfig({
                             )
                         }
                         placeholder="value"
-                        className="bg-[#1e1e1e] text-white text-sm px-2 py-1.5 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500"
+                        className="bg-(--bg-input) text-(--text-primary) text-sm px-2 py-1.5 rounded border border-(--border-color) focus:outline-none focus:ring-1 focus:ring-(--accent) placeholder:text-(--text-muted)"
                     />
                 </div>
             ))}
 
             <button
                 onClick={() => addItem(setItems, items)}
-                className="flex items-center gap-1.5 text-sm text-[#6c63ff] hover:text-[#8a84ff] transition-colors mt-1"
+                className="flex items-center gap-1.5 text-sm text-(--accent) hover:text-(--accent-light) transition-colors mt-1"
             >
                 + add {label}
             </button>
@@ -152,15 +152,15 @@ function RequestConfig({
 
     return (
         <div className="flex min-h-0 flex-1 flex-col">
-            <div className="flex items-center gap-0.5 px-3 pt-2 shrink-0 bg-[#0d0d0d]">
+            <div className="flex items-center gap-0.5 px-3 pt-2 shrink-0 bg-(--bg-primary)">
                 {(["params", "headers", "body"] as const).map((tab) => (
                     <button
                         key={tab}
                         onClick={() => onTabChange(tab)}
                         className={`px-3 py-1.5 text-xs font-medium capitalize rounded-t transition-colors ${
                             activeTab === tab
-                                ? "text-white bg-[#1e1e1e]"
-                                : "text-gray-500 hover:text-gray-300 hover:bg-[#1a1a1a]"
+                                ? "text-(--text-primary) bg-(--bg-tertiary)"
+                                : "text-(--text-muted) hover:text-(--text-secondary) hover:bg-(--bg-elevated)"
                         }`}
                     >
                         {tab}
@@ -168,7 +168,7 @@ function RequestConfig({
                 ))}
             </div>
 
-            <div className="flex-1 bg-[#141414] border border-[#2a2a2a] rounded-b border-t-0 overflow-y-auto">
+            <div className="flex-1 bg-(--bg-secondary) border border-(--border-color) rounded-b border-t-0 overflow-y-auto">
                 {activeTab === "params" &&
                     renderItems(params, setParams, "parameter")}
                 {activeTab === "headers" &&
@@ -179,7 +179,7 @@ function RequestConfig({
                             placeholder="request body"
                             value={body}
                             onChange={(e) => setBody(e.target.value)}
-                            className="w-full h-65 bg-[#1e1e1e] text-white text-sm px-3 py-2 rounded border border-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#6c63ff] placeholder:text-gray-500 resize-none font-mono"
+                            className="w-full h-65 bg-(--bg-input) text-(--text-primary) text-sm px-3 py-2 rounded border border-(--border-color) focus:outline-none focus:ring-1 focus:ring-(--accent) placeholder:text-(--text-muted) resize-none font-mono"
                         />
                     </div>
                 )}

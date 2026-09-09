@@ -22,3 +22,77 @@
     scrollbar-width: thin;
     scrollbar-color: #3a3a3a transparent;
 }
+
+/* ===== CSS viables ===== */
+:root {
+    /* Backgrounds */
+    --bg-primary: hsl(0, 0%, 100%);
+    --bg-secondary: hsl(0, 0%, 90%);
+    --bg-tertiary: hsl(0, 0%, 80%);
+    --bg-elevated: hsl(0, 0%, 70%);
+    --bg-input: #ffffff;
+    --bg-hover: #f1f5f9;
+
+    /* Borders */
+    --border-color: #e5e7eb;
+
+    /* Text */
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --text-on-accent: #ffffff;
+
+    /* Accent */
+    --accent: #6c63ff;
+    --accent-hover: #5a52e0;
+    --accent-light: #8a84ff; /* for hover on text/links */
+
+    /* Danger */
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+
+    /* Status colours (for response) */
+    --status-success: #22c55e;
+    --status-error: #ef4444;
+    --status-warning: #eab308;
+
+    /* Method badges */
+    --method-get: #3b82f6;
+    --method-post: #22c55e;
+    --method-put: #eab308;
+    --method-delete: #ef4444;
+    --method-patch: #8b5cf6;
+}
+
+.dark {
+    --bg-primary: #0d0d0d;
+    --bg-secondary: #141414;
+    --bg-tertiary: #1e1e1e;
+    --bg-elevated: #1a1a1a;
+    --bg-input: #1e1e1e;
+    --bg-hover: #2a2a2a;
+
+    --border-color: #3a3a3a;
+
+    --text-primary: #ffffff;
+    --text-secondary: #d1d5db;
+    --text-muted: #6b7280;
+    --text-on-accent: #ffffff;
+
+    --accent: #6c63ff;
+    --accent-hover: #5a52e0;
+    --accent-light: #a09888;
+
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+
+    --status-success: #22c55e;
+    --status-error: #ef4444;
+    --status-warning: #eab308;
+
+    --method-get: #3b82f6;
+    --method-post: #22c55e;
+    --method-put: #eab308;
+    --method-delete: #ef4444;
+    --method-patch: #8b5cf6;
+}

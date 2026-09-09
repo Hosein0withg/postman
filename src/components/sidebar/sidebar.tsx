@@ -3,6 +3,7 @@ import type { RefObject } from "react";
 import HistoryDiv from "./HistoryDiv";
 import CollectionDiv from "./CollectionDiv";
 import type { HistoryItem, Request, Collection } from "../../type";
+import { useTheme } from "../../hooks/useTheme";
 
 interface SidebarProps {
     history: HistoryItem[];
@@ -39,16 +40,24 @@ function Sidebar({
     const [activeView, setActiveView] = useState<"history" | "collections">(
         "collections",
     );
+    const { theme, toggleTheme } = useTheme();
 
     return (
-        <aside className="w-70 bg-[#141414] border-r border-[#2a2a2a] flex flex-col shrink-0">
+        <aside className="w-70 bg-(--bg-secondary) border-r border-(--border-color) flex flex-col shrink-0">
+            <button
+                onClick={toggleTheme}
+                className="mx-auto flex justify-around p-2 w-fit rounded hover:bg-(--bg-hover) transition-colors text-(--text-secondary)"
+                aria-label="Toggle theme"
+            >
+                {theme === "dark" ? "☀️" : "🌙"}
+            </button>
             <nav className="flex p-3 space-y-1">
                 <button
                     onClick={() => setActiveView("collections")}
                     className={`flex-1 py-2 px-3 text-sm font-medium transition-colors ${
                         activeView === "collections"
-                            ? "text-white border-b-2 border-[#6c63ff]"
-                            : "text-gray-500 hover:text-gray-300"
+                            ? "text-(--text-primary) border-b-2 border-(--accent)"
+                            : "text-(--text-muted) hover:text-(--text-secondary)"
                     }`}
                 >
                     Collections
@@ -57,24 +66,24 @@ function Sidebar({
                     onClick={() => setActiveView("history")}
                     className={`flex-1 py-2 px-3 text-sm font-medium transition-colors ${
                         activeView === "history"
-                            ? "text-white border-b-2 border-[#6c63ff]"
-                            : "text-gray-500 hover:text-gray-300"
+                            ? "text-(--text-primary) border-b-2 border-(--accent)"
+                            : "text-(--text-muted) hover:text-(--text-secondary)"
                     }`}
                 >
                     History
                 </button>
             </nav>
             {activeView === "collections" && (
-                <div className="flex gap-2 px-3 py-2 border-b border-[#2a2a2a] shrink-0">
+                <div className="flex gap-2 px-3 py-2 border-b border-(--border-color) shrink-0">
                     <button
                         onClick={onExportCollections}
-                        className="flex-1 bg-[#6c63ff] hover:bg-[#5a52e0] text-white text-xs font-medium px-2 py-1 rounded transition-colors"
+                        className="flex-1 bg-(--accent) hover:bg-(--accent-hover) text-(--text-on-accent) text-xs font-medium px-2 py-1 rounded transition-colors"
                     >
                         Export
                     </button>
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="flex-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white text-xs font-medium px-2 py-1 rounded transition-colors"
+                        className="flex-1 bg-(--bg-tertiary) hover:bg-(--bg-hover) text-(--text-secondary) text-xs font-medium px-2 py-1 rounded transition-colors border border-(--border-color)"
                     >
                         Import
                     </button>
