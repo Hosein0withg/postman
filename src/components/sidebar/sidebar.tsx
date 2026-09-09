@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { RefObject } from "react";
 import HistoryDiv from "./HistoryDiv";
 import CollectionDiv from "./CollectionDiv";
 import type { HistoryItem, Request, Collection } from "../../type";
@@ -16,6 +17,9 @@ interface SidebarProps {
         collectionId: string,
         requestIndex: number,
     ) => void;
+    onExportCollections: () => void;
+    onImportCollections: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    fileInputRef: RefObject<HTMLInputElement | null>;
 }
 
 function Sidebar({
@@ -28,6 +32,9 @@ function Sidebar({
     onRenameCollection,
     onDeleteCollection,
     onRemoveRequestFromCollection,
+    onExportCollections,
+    onImportCollections,
+    fileInputRef,
 }: SidebarProps) {
     const [activeView, setActiveView] = useState<"history" | "collections">(
         "collections",
@@ -57,6 +64,29 @@ function Sidebar({
                     History
                 </button>
             </nav>
+            {activeView === "collections" && (
+                <div className="flex gap-2 px-3 py-2 border-b border-[#2a2a2a] shrink-0">
+                    <button
+                        onClick={onExportCollections}
+                        className="flex-1 bg-[#6c63ff] hover:bg-[#5a52e0] text-white text-xs font-medium px-2 py-1 rounded transition-colors"
+                    >
+                        Export
+                    </button>
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white text-xs font-medium px-2 py-1 rounded transition-colors"
+                    >
+                        Import
+                    </button>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept=".json"
+                        onChange={onImportCollections}
+                        className="hidden"
+                    />
+                </div>
+            )}
             <div className="flex-1 overflow-hidden">
                 {activeView === "history" ? (
                     <HistoryDiv

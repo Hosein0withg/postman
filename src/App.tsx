@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "./components/sidebar/sidebar.tsx";
 import TabDiv from "./components/main/tab/TabDiv.tsx";
 import RequestDiv from "./components/main/request/RequestDiv.tsx";
@@ -9,6 +9,7 @@ import type {
     AppData,
     HistoryItem,
     Tab,
+    Collection,
 } from "./type.ts";
 import { sendApiRequest } from "./services/apiService.ts";
 import { loadAppData, createAutoSave } from "./utils/storage.ts";
@@ -219,6 +220,132 @@ function App() {
         updateAppData({ tabs: updatedTabs });
     };
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const exportCollections = () => {
+        const exportData = {
+            version: "1.0",
+            collections: appData.collections,
+        };
+        const json = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `collections_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    const importCollections = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target?.result as string);
+                if (!isValidImportData(data)) {
+                    alert("Invalid import data");
+                    return;
+                }
+                const mergedCollections = mergeCollections(
+                    appData.collections,
+                    data.collections,
+                );
+                updateAppData({ collections: mergedCollections });
+                alert(
+                    `imported ${data.collections.length} collections successfully!`,
+                );
+            } catch (error) {
+                alert("Failed to import collections");
+                console.error(error);
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+    };
+
+    const mergeCollections = (
+        existing: Collection[],
+        imported: Collection[],
+    ): Collection[] => {
+        const existingMap = new Map(existing.map((coll) => [coll.id, coll]));
+        for (const importedColl of imported) {
+            if (!existingMap.has(importedColl.id)) {
+                existingMap.set(importedColl.id, importedColl);
+            }
+        }
+        return Array.from(existingMap.values());
+    };
+
+    const isValidImportData = (
+        data: unknown,
+    ): data is { version: string; collections: Collection[] } => {
+        if (!data || typeof data !== "object") return false;
+
+        const obj = data as Record<string, unknown>;
+
+        // Check version
+        if (typeof obj.version !== "string") return false;
+
+        // Check collections
+        if (!Array.isArray(obj.collections)) return false;
+
+        // Check each collection
+        return obj.collections.every((coll) => {
+            if (!coll || typeof coll !== "object") return false;
+
+            const c = coll as Record<string, unknown>;
+
+            // Check basic collection fields
+            if (typeof c.id !== "string") return false;
+            if (typeof c.name !== "string") return false;
+            if (!Array.isArray(c.requests)) return false;
+
+            // Check each request
+            return c.requests.every((req) => {
+                if (!req || typeof req !== "object") return false;
+
+                const r = req as Record<string, unknown>;
+
+                // Check basic request fields
+                if (typeof r.method !== "string") return false;
+                if (typeof r.fullUrl !== "string") return false;
+                if (!Array.isArray(r.params)) return false;
+                if (!Array.isArray(r.headers)) return false;
+                if (typeof r.body !== "string") return false;
+
+                // Check params
+                const allParamsValid = r.params.every((param) => {
+                    if (!param || typeof param !== "object") return false;
+                    const p = param as Record<string, unknown>;
+                    return (
+                        typeof p.id === "string" &&
+                        typeof p.key === "string" &&
+                        typeof p.value === "string" &&
+                        typeof p.enabled === "boolean"
+                    );
+                });
+
+                // Check headers
+                const allHeadersValid = r.headers.every((header) => {
+                    if (!header || typeof header !== "object") return false;
+                    const h = header as Record<string, unknown>;
+                    return (
+                        typeof h.id === "string" &&
+                        typeof h.key === "string" &&
+                        typeof h.value === "string" &&
+                        typeof h.enabled === "boolean"
+                    );
+                });
+
+                return allParamsValid && allHeadersValid;
+            });
+        });
+    };
+
     return (
         <div className="flex h-screen">
             <Sidebar
@@ -231,6 +358,9 @@ function App() {
                 onRenameCollection={renameCollection}
                 onDeleteCollection={deleteCollection}
                 onRemoveRequestFromCollection={removeRequestFromCollection}
+                onExportCollections={exportCollections}
+                onImportCollections={importCollections}
+                fileInputRef={fileInputRef}
             />
 
             <div className="flex min-w-0 flex-1 flex-col">
