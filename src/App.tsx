@@ -353,7 +353,7 @@ function App() {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden bg-(--bg-primary)">
+        <div className="flex h-dvh overflow-hidden bg-(--bg-primary)">
             <Sidebar
                 history={appData.history}
                 collections={appData.collections}

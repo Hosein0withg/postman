@@ -46,11 +46,15 @@ function Sidebar({
 
     return (
         <aside
-            className={`bg-(--bg-secondary) flex flex-col shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out ${
-                isSidebarOpen ? "w-70 border-r border-(--border-color)" : "w-0"
-            }`}
+            className={`bg-(--bg-secondary) flex flex-col shrink-0 overflow-hidden
+                transition-[width] duration-300 ease-in-out
+                ${
+                    isSidebarOpen
+                        ? "w-[min(280px,80vw)] border-r border-(--border-color)"
+                        : "w-0 border-r-0"
+                }`}
         >
-            <div className="w-70 h-full flex flex-col">
+            <div className="w-[min(280px,80vw)] h-full flex flex-col">
                 <button
                     onClick={toggleTheme}
                     className="mx-auto flex justify-around p-2 w-fit rounded hover:bg-(--bg-hover) transition-colors text-(--text-secondary)"

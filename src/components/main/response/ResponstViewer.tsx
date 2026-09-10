@@ -38,8 +38,7 @@ function ResponseViewer({ response, isLoading = false }: ResponseViewerProps) {
 
     if (isLoading) {
         return (
-            <section className="flex flex-col bg-(--bg-primary) border-t border-(--border-color) h-65 shrink-0">
-                <div className="flex items-center px-4 py-2 bg-(--bg-secondary) border-b border-(--border-color) shrink-0">
+            <section className="flex flex-col bg-(--bg-primary) border-t border-(--border-color) h-40 sm:h-52 lg:h-65 shrink-0 min-h-0">                <div className="flex items-center px-4 py-2 bg-(--bg-secondary) border-b border-(--border-color) shrink-0">
                     <span className="text-sm font-medium text-(--text-secondary)">
                         Response
                     </span>
@@ -59,8 +58,7 @@ function ResponseViewer({ response, isLoading = false }: ResponseViewerProps) {
 
     if (!response) {
         return (
-            <section className="flex flex-col bg-(--bg-primary) border-t border-(--border-color) h-65 shrink-0">
-                <div className="flex items-center px-4 py-2 bg-(--bg-secondary) border-b border-(--border-color) shrink-0">
+            <section className="flex flex-col bg-(--bg-primary) border-t border-(--border-color) h-40 sm:h-52 lg:h-65 shrink-0 min-h-0">                <div className="flex items-center px-4 py-2 bg-(--bg-secondary) border-b border-(--border-color) shrink-0">
                     <span className="text-sm font-medium text-(--text-secondary)">
                         Response
                     </span>
@@ -87,8 +85,7 @@ function ResponseViewer({ response, isLoading = false }: ResponseViewerProps) {
 
     if (response.error) {
         return (
-            <section className="flex flex-col bg-(--bg-primary) border-t border-(--border-color) h-65 shrink-0">
-                <div className="flex items-center px-4 py-2 bg-(--bg-secondary) border-b border-(--bg-hover) shrink-0">
+            <section className="flex flex-col bg-(--bg-primary) border-t border-(--border-color) h-40 sm:h-52 lg:h-65 shrink-0 min-h-0">                <div className="flex items-center px-4 py-2 bg-(--bg-secondary) border-b border-(--bg-hover) shrink-0">
                     <span className="text-sm font-medium text-(--text-secondary)">
                         Response
                     </span>
@@ -113,8 +110,7 @@ function ResponseViewer({ response, isLoading = false }: ResponseViewerProps) {
     }
 
     return (
-        <section className="flex flex-col bg-(--bg-primary) border-t border-(--bg-hover) h-65 shrink-0">
-            <div className="flex items-center justify-between px-4 py-2 bg-(--bg-secondary) border-b border-(--border-color) shrink-0">
+        <section className="flex flex-col bg-(--bg-primary) border-t border-(--border-color) h-40 sm:h-52 lg:h-65 shrink-0 min-h-0">            <div className="flex items-center justify-between px-4 py-2 bg-(--bg-secondary) border-b border-(--border-color) shrink-0">
                 <div className="flex items-center gap-3 flex-wrap">
                     <span className="text-sm font-medium text-(--text-secondary)">
                         Response

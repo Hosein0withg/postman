@@ -30,7 +30,7 @@ function RequestConfig({
 }: RequestConfigProps) {
     const addItem = <T extends ConfigItem>(
         setItems: (items: T[]) => void,
-        currentItems: T[], // Add this parameter
+        currentItems: T[],
     ) => {
         const newItem = {
             id: crypto.randomUUID().toString(),
@@ -179,8 +179,7 @@ function RequestConfig({
                             placeholder="request body"
                             value={body}
                             onChange={(e) => setBody(e.target.value)}
-                            className="w-full h-65 bg-(--bg-input) text-(--text-primary) text-sm px-3 py-2 rounded border border-(--border-color) focus:outline-none focus:ring-1 focus:ring-(--accent) placeholder:text-(--text-muted) resize-none font-mono"
-                        />
+                            className="w-full h-40 sm:h-52 md:h-65 bg-(--bg-input) text-(--text-primary) text-sm px-3 py-2 rounded border border-(--border-color) focus:outline-none focus:ring-1 focus:ring-(--accent) placeholder:text-(--text-muted) resize-none font-mono"                        />
                     </div>
                 )}
             </div>
