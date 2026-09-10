@@ -51,6 +51,12 @@ function App() {
         };
     }, [appData]);
 
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
+
     const updateAppData = (newData: Partial<AppData>) => {
         setAppData((prevData) => ({ ...prevData, ...newData }));
     };
@@ -347,7 +353,7 @@ function App() {
     };
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-screen overflow-hidden bg-(--bg-primary)">
             <Sidebar
                 history={appData.history}
                 collections={appData.collections}
@@ -361,6 +367,7 @@ function App() {
                 onExportCollections={exportCollections}
                 onImportCollections={importCollections}
                 fileInputRef={fileInputRef}
+                isSidebarOpen={isSidebarOpen}
             />
 
             <div className="flex min-w-0 flex-1 flex-col">
@@ -370,9 +377,10 @@ function App() {
                     onAddTab={addNewTab}
                     onSwitchTab={switchTab}
                     onCloseTab={closeTab}
+                    onToggleSidebar={toggleSidebar}
                 />
 
-                <div className="flex min-h-0 flex-1 flex-col">
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                     <RequestDiv
                         onSendRequest={sendRequest}
                         onResetResponse={resetResponse}
